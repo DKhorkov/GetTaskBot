@@ -1,0 +1,5 @@
+.idea/
+*.pyc
+src/database/database.db
+*.log
+src/configs.py
