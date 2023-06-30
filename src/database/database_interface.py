@@ -14,7 +14,7 @@ class DatabaseInterface:
     def __init__(self, logger: Logger) -> None:
         self.__logger = logger
         self.__connection = create_engine(
-            "sqlite:///database/database.db",
+            "sqlite:///src/database/database.db",
             connect_args={'check_same_thread': False}
         )
         self.__Session_base = sessionmaker(bind=self.__connection)

@@ -1,0 +1,3 @@
+MARKUP_BUTTONS:
+  accept_task_button: 'Принять задание ✅'
+  refuse_task_button: 'Отказаться от задания ❌'
