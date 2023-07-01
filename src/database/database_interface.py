@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.sql import exists
 from telebot.types import Message
+from typing import Type
 
 
 from src.database.models import __Base__, Users
@@ -60,3 +61,23 @@ class DatabaseInterface:
         self.__logger.info(
             f'User with id={message.from_user.id} and username={message.from_user.username} have subscribed!'
         )
+
+    def change_active_task_status(self, user_id: int) -> None:
+        try:
+            user = self.__get_user_by_user_id(user_id=user_id)
+            user.have_active_task = not user.have_active_task
+            self.__session.commit()
+        except Exception as e:
+            self.__logger.error(e)
+
+    def increment_completed_tasks_count(self, user_id: int) -> None:
+        try:
+            user = self.__get_user_by_user_id(user_id=user_id)
+            user.completed_tasks_count = user.completed_tasks_count + 1
+            self.__session.commit()
+        except Exception as e:
+            self.__logger.error(e)
+
+    def __get_user_by_user_id(self, user_id: int) -> Type[Users]:
+        user = self.__session.query(Users).filter(Users.user_id == user_id).one()
+        return user

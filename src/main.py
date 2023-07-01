@@ -1,16 +1,19 @@
 import telebot
+import random
 
 from telebot.types import Message, CallbackQuery
+
 from src.configs import TOKEN
 from src.logging_system import logger
 from src.database.database_interface import DatabaseInterface
-from src.markups import get_start_markup
+from src.markups import get_start_markup, get_accept_task_markup, get_refuse_task_markup
 from src.yaml_reader import YamlReader
 
 
 bot = telebot.TeleBot(token=TOKEN)
 db_interface = DatabaseInterface(logger=logger)
 yaml_reader = YamlReader(logger=logger)
+tasks_list = yaml_reader.get_tasks_list()
 
 
 @bot.message_handler(commands=['start'])
@@ -37,6 +40,24 @@ def accept_task(call: CallbackQuery) -> None:
             message_id=call.message.message_id,
             reply_markup=None
         )
+
+        if len(tasks_list) > 0:
+            task_index = random.randint(0, len(tasks_list) - 1)
+            task = tasks_list.pop(task_index)
+            db_interface.change_active_task_status(user_id=call.from_user.id)
+            bot.send_message(
+                chat_id=call.from_user.id,
+                text=yaml_reader.get_accept_task_text() + task,
+                reply_markup=get_accept_task_markup()
+            )
+
+        else:
+            bot.send_message(
+                chat_id=call.from_user.id,
+                text=yaml_reader.get_empty_tasks_list_text() + yaml_reader.get_thank_for_participation_text(),
+                reply_markup=None
+            )
+
     except Exception as e:
         logger.error(e)
 
@@ -49,6 +70,12 @@ def refuse_task(call: CallbackQuery) -> None:
             message_id=call.message.message_id,
             reply_markup=None
         )
+
+        bot.send_message(
+            chat_id=call.from_user.id,
+            text=yaml_reader.get_refuse_task_text(),
+            reply_markup=get_refuse_task_markup()
+        )
     except Exception as e:
         logger.error(e)
 
@@ -59,6 +86,14 @@ def task_completed(call: CallbackQuery) -> None:
         bot.edit_message_reply_markup(
             chat_id=call.from_user.id,
             message_id=call.message.message_id,
+            reply_markup=None
+        )
+
+        db_interface.change_active_task_status(user_id=call.from_user.id)
+        db_interface.increment_completed_tasks_count(user_id=call.from_user.id)
+        bot.send_message(
+            chat_id=call.from_user.id,
+            text=yaml_reader.get_thank_for_participation_text(),
             reply_markup=None
         )
     except Exception as e:
