@@ -4,3 +4,4 @@ src/database/database.db
 *.log
 src/configs.py
 logs/
+*.db

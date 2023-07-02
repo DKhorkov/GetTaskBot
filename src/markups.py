@@ -1,7 +1,7 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from src.logging_system import logger
-from src.yaml_reader import YamlReader
+from logging_system import logger
+from yaml_reader import YamlReader
 
 
 yaml_reader = YamlReader(logger=logger)

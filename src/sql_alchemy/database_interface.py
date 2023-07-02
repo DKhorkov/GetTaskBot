@@ -1,3 +1,4 @@
+import os.path
 from logging import Logger
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -6,8 +7,7 @@ from sqlalchemy.sql import exists
 from telebot.types import Message
 from typing import Type
 
-
-from src.database.models import __Base__, Users
+from .models import __Base__, Users
 
 
 class DatabaseInterface:
@@ -25,11 +25,17 @@ class DatabaseInterface:
 
     def __create_tables(self) -> None:
         try:
+            self.__check_database_folder()
             __Base__.metadata.create_all(self.__connection)
         except InvalidRequestError:
             pass
         except Exception as e:
             self.__logger.error(e)
+
+    @staticmethod
+    def __check_database_folder():
+        if not os.path.exists('src/database'):
+            os.mkdir('src/database')
 
     def save_user(self, message: Message) -> bool:
         try:

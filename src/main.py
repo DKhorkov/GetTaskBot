@@ -3,11 +3,11 @@ import random
 
 from telebot.types import Message, CallbackQuery
 
-from src.configs import TOKEN
-from src.logging_system import logger
-from src.database.database_interface import DatabaseInterface
-from src.markups import get_start_markup, get_accept_task_markup, get_refuse_task_markup
-from src.yaml_reader import YamlReader
+from configs import TOKEN
+from logging_system import logger
+from sql_alchemy.database_interface import DatabaseInterface
+from markups import get_start_markup, get_accept_task_markup, get_refuse_task_markup
+from yaml_reader import YamlReader
 
 
 bot = telebot.TeleBot(token=TOKEN)

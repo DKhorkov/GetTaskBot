@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  get_task_bot:
+    build: .
+    restart: always
+    volumes:
+      - ./docker_files/logs:/app/logs
+      - ./docker_files/database:/app/src/database
